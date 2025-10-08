@@ -1,6 +1,6 @@
 export default class Coordinate {
   constructor(
-    private readonly latitude: number,
-    private readonly longitude: number,
+    public readonly latitude: number,
+    public readonly longitude: number,
   ) {}
 }
