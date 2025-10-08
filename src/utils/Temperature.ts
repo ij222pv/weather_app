@@ -3,30 +3,30 @@ import TemperatureConverter from "./TemperatureConverter";
 export default class Temperature {
   private constructor(private kelvin: number) {}
 
-  static fromKelvin(kelvin: number): Temperature {
+  public static fromKelvin(kelvin: number): Temperature {
     return new Temperature(kelvin);
   }
 
-  static fromCelsius(celsius: number): Temperature {
+  public static fromCelsius(celsius: number): Temperature {
     const converter = new TemperatureConverter();
     return new Temperature(converter.celsiusToKelvin(celsius));
   }
 
-  static fromFahrenheit(fahrenheit: number): Temperature {
+  public static fromFahrenheit(fahrenheit: number): Temperature {
     const converter = new TemperatureConverter();
     return new Temperature(converter.fahrenheitToKelvin(fahrenheit));
   }
 
-  toKelvin(): number {
+  public toKelvin(): number {
     return this.kelvin;
   }
 
-  toCelsius(): number {
+  public toCelsius(): number {
     const converter = new TemperatureConverter();
     return converter.kelvinToCelsius(this.kelvin);
   }
 
-  toFahrenheit(): number {
+  public toFahrenheit(): number {
     const converter = new TemperatureConverter();
     return converter.kelvinToFahrenheit(this.kelvin);
   }
