@@ -8,21 +8,16 @@ export type WeatherData = {
   date: Date;
   temperature?: Temperature;
   windSpeed?: Speed;
-  rain?: Length;
+  rainfall?: Length;
   snowfall?: Length;
 };
 
-export type HistoricalWeatherOptions = {
-  temperature?: boolean;
-  windSpeed?: boolean;
-  rain?: boolean;
-  snow?: boolean;
-};
+export type WeatherOptions = Exclude<keyof WeatherData, "date">;
 
 export default interface HistoricalWeatherApi {
   getDaily(
     location: Coordinate,
     dates: DateRange,
-    options: HistoricalWeatherOptions,
+    options: WeatherOptions[],
   ): Promise<WeatherData[]>;
 }
