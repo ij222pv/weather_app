@@ -1,5 +1,5 @@
 import type HistoricalWeatherApi from "../api/HistoricalWeatherApi";
-import type { WeatherOptions, WeatherData } from "../api/HistoricalWeatherApi";
+import type { WeatherMetric, WeatherData } from "../api/HistoricalWeatherApi";
 import TooManyRequestsError from "../errors/TooManyRequestsError";
 import Coordinate from "../utils/Coordinate";
 import DateRange from "../utils/DateRange";
@@ -22,7 +22,7 @@ type HistoricalJsonResponse = {
 export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   private static readonly apiUrl =
     "https://archive-api.open-meteo.com/v1/archive";
-  private static readonly optionsMap: Record<WeatherOptions, string> = {
+  private static readonly optionsMap: Record<WeatherMetric, string> = {
     temperature: "temperature_2m_mean",
     windSpeed: "windspeed_10m_mean",
     rainfall: "rain_sum",
@@ -32,7 +32,7 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   public async getDaily(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherOptions[],
+    options: WeatherMetric[],
   ): Promise<WeatherData[]> {
     const response = await this.fetch(location, dates, options);
     const json = await this.getJsonFromResponse(response);
@@ -43,7 +43,7 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   private async fetch(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherOptions[],
+    options: WeatherMetric[],
   ): Promise<Response> {
     const url = this.getFetchUrl(location, dates, options);
     const response = await fetch(url);
@@ -54,7 +54,7 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   private getFetchUrl(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherOptions[],
+    options: WeatherMetric[],
   ): URL {
     const url = new URL(OpenMeteoHistorical.apiUrl);
     url.searchParams.append("latitude", location.latitude.toString());
@@ -76,7 +76,7 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
     return date.toISOString().split("T")[0];
   }
 
-  private getListOfDailyParameters(options: WeatherOptions[]): string[] {
+  private getListOfDailyParameters(options: WeatherMetric[]): string[] {
     const params: string[] = [];
     for (const option of options) {
       params.push(OpenMeteoHistorical.optionsMap[option]);
@@ -126,27 +126,27 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
 
   private async getWeatherDataFromJson(
     json: HistoricalJsonResponse,
-    options: WeatherOptions[],
+    options: WeatherMetric[],
   ): Promise<WeatherData[]> {
     const result: WeatherData[] = [];
     for (let i = 0; i < json.daily.time.length; i++) {
       const dailyData: WeatherData = {
         date: new Date(json.daily.time[i]),
       };
-      if (options.includes("temperature" as WeatherOptions)) {
+      if (options.includes("temperature" as WeatherMetric)) {
         dailyData.temperature = Temperature.fromCelsius(
           json.daily.temperature_2m_mean![i],
         );
       }
-      if (options.includes("windSpeed" as WeatherOptions)) {
+      if (options.includes("windSpeed" as WeatherMetric)) {
         dailyData.windSpeed = Speed.fromKilometersPerHour(
           json.daily.windspeed_10m_mean![i],
         );
       }
-      if (options.includes("rainfall" as WeatherOptions)) {
+      if (options.includes("rainfall" as WeatherMetric)) {
         dailyData.rainfall = Length.fromMillimeters(json.daily.rain_sum![i]);
       }
-      if (options.includes("snowfall" as WeatherOptions)) {
+      if (options.includes("snowfall" as WeatherMetric)) {
         dailyData.snowfall = Length.fromMillimeters(
           json.daily.snowfall_sum![i],
         );
