@@ -1,7 +1,10 @@
 import TemperatureConverter from "./TemperatureConverter";
+import Unit from "./Unit";
 
-export default class Temperature {
-  private constructor(private kelvin: number) {}
+export default class Temperature extends Unit {
+  private constructor(private kelvin: number) {
+    super();
+  }
 
   public static fromKelvin(kelvin: number): Temperature {
     return new Temperature(kelvin);
@@ -29,5 +32,9 @@ export default class Temperature {
   public toFahrenheit(): number {
     const converter = new TemperatureConverter();
     return converter.kelvinToFahrenheit(this.kelvin);
+  }
+
+  public valueOf(): number {
+    return this.kelvin;
   }
 }

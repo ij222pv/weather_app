@@ -1,5 +1,9 @@
-export default class Length {
-  private constructor(private meters: number) {}
+import Unit from "./Unit";
+
+export default class Length extends Unit {
+  private constructor(private meters: number) {
+    super();
+  }
 
   public static fromMillimeters(mm: number): Length {
     return new Length(mm / 1000);
@@ -23,5 +27,9 @@ export default class Length {
 
   public toKilometers(): number {
     return this.meters / 1000;
+  }
+
+  public valueOf(): number {
+    return this.meters;
   }
 }

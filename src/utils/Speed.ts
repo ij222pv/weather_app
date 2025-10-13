@@ -1,5 +1,9 @@
-export default class Speed {
-  private constructor(private metersPerSecond: number) {}
+import Unit from "./Unit";
+
+export default class Speed extends Unit {
+  private constructor(private metersPerSecond: number) {
+    super();
+  }
 
   public static fromMetersPerSecond(mps: number): Speed {
     return new Speed(mps);
@@ -15,5 +19,9 @@ export default class Speed {
 
   public toKilometersPerHour(): number {
     return this.metersPerSecond * 3.6;
+  }
+
+  public valueOf(): number {
+    return this.metersPerSecond;
   }
 }
