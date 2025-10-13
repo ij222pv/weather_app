@@ -7,12 +7,40 @@
   <script src="/src/index.ts" type="module" defer></script>
 </head>
 <body>
-  <form action="">
-    <label>
-      City:
-      <input type="text" name="city">
-    </label>
-    <button type="submit">Submit</button>
+  <h1>Weather trends</h1>
+  <form action="" id="trend-form">
+    <fieldset>
+      <legend>Enter City and Select Data</legend>
+      <p>
+        <label>
+          <strong>City:</strong><br>
+          <input type="text" name="city" required placeholder="e.g. Stockholm">
+        </label>
+      </p>
+      <p>
+        <label>
+          <input type="checkbox" name="temperature">
+          Temperature
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" name="windSpeed">
+          Wind speed
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" name="rainfall">
+          Rain
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" name="snowfall">
+          Snow
+        </label>
+      </p>
+      <button type="submit">Submit</button>
+    </fieldset>
   </form>
+  <div id="result-div"></div>
 </body>
 </html>
