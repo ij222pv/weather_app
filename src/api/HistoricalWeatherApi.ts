@@ -12,12 +12,12 @@ export type WeatherData = {
   snowfall?: Length;
 };
 
-export type WeatherOptions = Exclude<keyof WeatherData, "date">;
+export type WeatherMetric = Exclude<keyof WeatherData, "date">;
 
 export default interface HistoricalWeatherApi {
   getDaily(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherOptions[],
+    options: WeatherMetric[],
   ): Promise<WeatherData[]>;
 }
