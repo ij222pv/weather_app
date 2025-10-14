@@ -6,6 +6,12 @@ import DateRange from "../utils/DateRange";
 import TooManyRequestsError from "../errors/TooManyRequestsError";
 import FormHandler from "../ui/FormHandler";
 import TrendModel from "../models/TrendModel";
+import Unit from "../utils/Unit";
+import Temperature from "../utils/Temperature";
+import Length from "../utils/Length";
+import Speed from "../utils/Speed";
+import TrendResultRenderer from "../ui/TrendResultRenderer";
+import { ChartData } from "../ui/ChartData";
 
 export default class TrendController {
   private formHandler: FormHandler;
@@ -30,23 +36,21 @@ export default class TrendController {
     city: string,
     metrics: WeatherMetric[],
   ): Promise<void> {
-    document.querySelector("#result-div")!.innerHTML =
-      `Loading data for ${city}...`;
+    const renderer = new TrendResultRenderer();
+    renderer.renderLoadingMessage(city);
+
+    const resultDiv = document.querySelector("#result-div");
+    if (!resultDiv) throw new Error("Result div not found");
 
     const geocoding = new OpenMeteoGeocoding();
     let coordinates;
     try {
       coordinates = await geocoding.getCoordinatesFromCity(city);
     } catch {
-      document.querySelector("#result-div")!.innerHTML =
-        `Could not find city: ${city}`;
+      renderer.renderCouldNotFindCityMessage(city);
       return;
     }
 
-    const pointsTemp: Point[] = [];
-    const pointsWind: Point[] = [];
-    const pointsRain: Point[] = [];
-    const pointsSnow: Point[] = [];
     let weatherData: WeatherData[] = [];
     try {
       weatherData = await new OpenMeteoHistorical().getDaily(
@@ -56,82 +60,59 @@ export default class TrendController {
       );
     } catch (error: unknown) {
       if (error instanceof TooManyRequestsError) {
-        document.querySelector("#result-div")!.innerHTML =
-          "Rate limit exceeded. Please try again in a few minutes.";
+        renderer.renderRateLimitExceededMessage();
         return;
       }
     }
-    console.log(weatherData);
-    for (const [index, data] of this.trendModel
-      .getAverageYearlyData(weatherData)
-      .entries()) {
-      if (data !== undefined) {
-        if (metrics.includes("temperature"))
-          pointsTemp.push(
-            new Point(1940 + index, data.temperature?.toCelsius() ?? 0),
-          );
-        if (metrics.includes("windSpeed"))
-          pointsWind.push(
-            new Point(1940 + index, data.windSpeed?.toMetersPerSecond() ?? 0),
-          );
-        if (metrics.includes("rainfall"))
-          pointsRain.push(
-            new Point(1940 + index, data.rainfall?.toMillimeters() ?? 0),
-          );
-        if (metrics.includes("snowfall"))
-          pointsSnow.push(
-            new Point(1940 + index, data.snowfall?.toMillimeters() ?? 0),
-          );
-      }
-    }
 
-    const windowSize = 10;
-    const smoothedTemperatures = this.trendModel.getRollingAverage(
-      pointsTemp.map((p) => p.y),
-      windowSize,
-    );
+    const weatherDataYearly = this.trendModel.getAverageYearlyData(weatherData);
 
-    const tempIncrease = smoothedTemperatures.at(-1)! - smoothedTemperatures[0];
+    resultDiv.innerHTML = "";
 
-    document.querySelector("#result-div")!.innerHTML = "";
-    if (tempIncrease > 0) {
-      document
-        .querySelector("#result-div")!
-        .appendChild(
-          document.createTextNode(`Uh oh! It's getting hot in here! 🥵`),
+    for (const metric of metrics) {
+      const points = weatherDataYearly.map((entry) => {
+        if (!entry[metric]) {
+          throw new Error(`Missing metric ${metric} for year ${entry.date}`);
+        }
+        return new Point(
+          entry.date.getFullYear(),
+          this.getNumberFromUnit(entry[metric]) ?? 0,
         );
-      document
-        .querySelector("#result-div")!
-        .appendChild(document.createElement("br"));
-      document
-        .querySelector("#result-div")!
-        .appendChild(
-          document.createTextNode(
-            `The average temperature has increased by ${tempIncrease.toFixed(2)}°C since 1940.`,
-          ),
-        );
-      document
-        .querySelector("#result-div")!
-        .appendChild(document.createElement("br"));
-    }
+      });
 
-    document
-      .querySelector("#result-div")!
-      .appendChild(
-        this.trendModel.createChartFromPoints(pointsTemp, "orangered"),
+      const windowSize = 20;
+      const smoothed = this.trendModel.getRollingAverage(
+        points.map((p) => p.y),
+        windowSize,
       );
-    document
-      .querySelector("#result-div")!
-      .appendChild(
-        this.trendModel.createChartFromPoints(pointsWind, "lightblue"),
+      const averagePoints: Point[] = smoothed.map(
+        (value, index) => new Point(1940 + index, value),
       );
-    document
-      .querySelector("#result-div")!
-      .appendChild(this.trendModel.createChartFromPoints(pointsRain, "gray"));
-    document
-      .querySelector("#result-div")!
-      .appendChild(
-        this.trendModel.createChartFromPoints(pointsSnow, "lightgray"),
-      );
+
+      const regression = this.trendModel.linearRegression(points);
+      const regressionPoints: Point[] = [
+        new Point(1940, regression.intercept + regression.slope * 1940),
+        new Point(2025, regression.intercept + regression.slope * 2025),
+      ];
+
+      const chartData: ChartData = {
+        rawPoints: points,
+        rollingAverage: averagePoints,
+        regression: regressionPoints,
+      };
+
+      renderer.renderChart(chartData, metric);
+    }
+  }
+
+  private getNumberFromUnit(value: Unit) {
+    if (value instanceof Temperature) {
+      return value.toCelsius();
+    } else if (value instanceof Length) {
+      return value.toMillimeters();
+    } else if (value instanceof Speed) {
+      return value.toMetersPerSecond();
+    }
+    return value.valueOf();
   }
 }

@@ -1,4 +1,4 @@
-import { Color, LineChart, Point, Polyline } from "line-chart";
+import { Point } from "line-chart";
 import { WeatherData, WeatherMetric } from "../api/HistoricalWeatherApi";
 import Unit from "../utils/Unit";
 
@@ -59,6 +59,41 @@ export default class TrendModel {
     return result;
   }
 
+  public getRollingAverage(data: number[], windowSize: number): number[] {
+    const result: number[] = [];
+    for (let i = 0; i < data.length; i++) {
+      const start = Math.max(0, i - Math.floor(windowSize / 2));
+      const end = Math.min(data.length - 1, i + Math.floor(windowSize / 2));
+      const window = data.slice(start, end + 1);
+      const average =
+        window.reduce((sum, value) => sum + value, 0) / window.length;
+      result.push(average);
+    }
+    return result;
+  }
+
+  public linearRegression(points: Point[]): {
+    slope: number;
+    intercept: number;
+  } {
+    const n = points.length;
+    const meanX = points.reduce((a, b) => a + b.x, 0) / n;
+    const meanY = points.reduce((a, b) => a + b.y, 0) / n;
+
+    let numerator = 0;
+    let denominator = 0;
+
+    for (let i = 0; i < n; i++) {
+      numerator += (points[i].x - meanX) * (points[i].y - meanY);
+      denominator += (points[i].x - meanX) ** 2;
+    }
+
+    const b = numerator / denominator;
+    const a = meanY - b * meanX;
+
+    return { slope: b, intercept: a };
+  }
+
   private getYearlyMetric(
     data: WeatherData[],
     metric: Exclude<keyof WeatherData, "date">,
@@ -97,50 +132,5 @@ export default class TrendModel {
       result[yearAsNumber] = sums[yearAsNumber].divide(counts[yearAsNumber]);
     }
     return result;
-  }
-
-  public getRollingAverage(data: number[], windowSize: number): number[] {
-    const result: number[] = [];
-    for (let i = 0; i < data.length; i++) {
-      const start = Math.max(0, i - Math.floor(windowSize / 2));
-      const end = Math.min(data.length - 1, i + Math.floor(windowSize / 2));
-      const window = data.slice(start, end + 1);
-      const average =
-        window.reduce((sum, value) => sum + value, 0) / window.length;
-      result.push(average);
-    }
-    return result;
-  }
-
-  public createChartFromPoints(points: Point[], color: string): LineChart {
-    const chart = new LineChart();
-    chart.addLine(
-      new Polyline(points, {
-        color: new Color("orange"),
-        thickness: 2,
-      }),
-    );
-
-    const windowSize = 20;
-    const smoothed = this.getRollingAverage(
-      points.map((p) => p.y),
-      windowSize,
-    );
-    const averagePoints: Point[] = smoothed.map(
-      (value, index) => new Point(1940 + index, value),
-    );
-
-    chart.addLine(
-      new Polyline(averagePoints, {
-        color: new Color(color),
-        thickness: 5,
-      }),
-    );
-
-    chart.autoFitViewport({
-      paddingY: 50,
-    });
-
-    return chart;
   }
 }
