@@ -21,7 +21,7 @@ export default class Speed extends Unit {
     return this.metersPerSecond * 3.6;
   }
 
-  public valueOf(): number {
+  protected valueOf(): number {
     return this.metersPerSecond;
   }
 }

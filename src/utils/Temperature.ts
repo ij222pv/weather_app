@@ -34,7 +34,7 @@ export default class Temperature extends Unit {
     return converter.kelvinToFahrenheit(this.kelvin);
   }
 
-  public valueOf(): number {
+  protected valueOf(): number {
     return this.kelvin;
   }
 }

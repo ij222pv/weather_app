@@ -29,7 +29,7 @@ export default class Length extends Unit {
     return this.meters / 1000;
   }
 
-  public valueOf(): number {
+  protected valueOf(): number {
     return this.meters;
   }
 }
