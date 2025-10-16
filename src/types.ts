@@ -14,3 +14,8 @@ export type ChartData = {
   rawPoints: Point[];
   regression: Point[];
 };
+
+export enum SumOrAverage {
+  SUM,
+  AVERAGE,
+}
