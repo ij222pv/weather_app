@@ -46,3 +46,24 @@ Data structure exposing its data and having no behavior:
 
 ## Chapter 7: Error Handling
 
+Here I wrap the standard `fetch` error status codes to throw exceptions instead. This allows me to handle the errors in a more elegant way using try/catch further up the call stack. I also use a custom error class `TooManyRequestsError` which allows me to single out rate limiting errors to display a specific message to the user. The book puts emphasis on error handling not cluttering the code and making it less readable. I have tried to separate the error handling from the main logic by placing error handling code in separate functions like `validateResponse` below.
+
+Throwing exceptions:
+
+![Throwing an exception](.readme/screenshots/7-2.png)
+
+Handling same exceptions:
+
+![Error handling](.readme/screenshots/7-1.png)
+
+## Chapter 8: Boundaries
+
+The screenshots show two interfaces I have created to separate my code from the third-party OpenMeteo API. This makes it so that the rest of my code doesn't have to know anything about the inner workings of the OpenMeteo API, and instead the code only has to communicate through the boundary of the interfaces. You can call this design pattern an Adapter or a Wrapper for the third-party boundary (The web API). The interfaces also make it easier to swap out the OpenMeteo API for another weather API in the future, since only the implementation of these interfaces would need to be changed.
+
+Interface for retrieving coordinates from a location name:
+
+![GeocodingApi interface](.readme/screenshots/8-1.png)
+
+Interface for retrieving historical weather data:
+
+![HistoricalWeatherApi interface](.readme/screenshots/8-2.png)
