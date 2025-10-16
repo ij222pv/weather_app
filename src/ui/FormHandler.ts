@@ -57,12 +57,16 @@ export default class FormHandler {
   }
 
   private reportNoCheckedCheckboxes(): void {
-    const checkboxes = this.getAllCheckboxes();
-    checkboxes.at(-1)!.setCustomValidity("Please select at least one metric.");
+    const submitButton = this.getSubmitButton();
+    submitButton.setCustomValidity("Please select at least one metric.");
     this.form.reportValidity();
     // If we don't reset the validity, the error message will show every time the
     // form is submitted, bypassing the submit handler.
-    checkboxes.at(-1)!.setCustomValidity("");
+    submitButton.setCustomValidity("");
+  }
+
+  private getSubmitButton(): HTMLButtonElement {
+    return this.form.querySelector("button[type=submit]")!;
   }
 
   private addCallback(callback: FormCallback): void {
