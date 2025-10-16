@@ -15,3 +15,9 @@ const typedConfig: Record<
 > = rawConfig;
 
 export default typedConfig;
+
+export const AVAILABLE_METRICS: WeatherMetric[] = Object.keys(
+  typedConfig,
+) as WeatherMetric[];
+
+export const START_YEAR = 1940;
