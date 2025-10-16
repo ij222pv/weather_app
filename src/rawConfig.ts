@@ -10,6 +10,7 @@ const rawConfig = {
       "Good news! It's cooling down!\nThe average temperature has decreased by {change}°C since 1940.",
     unitConstructor: Temperature.fromCelsius,
     openMeteoName: "temperature_2m_mean",
+    color: "orangered",
   },
   windSpeed: {
     increase:
@@ -18,6 +19,7 @@ const rawConfig = {
       "The average wind speed has decreased by {change} m/s since 1940.",
     unitConstructor: Speed.fromKilometersPerHour,
     openMeteoName: "windspeed_10m_mean",
+    color: "lightblue",
   },
   rainfall: {
     increase:
@@ -26,6 +28,7 @@ const rawConfig = {
       "The average yearly rainfall has decreased by {change} mm since 1940.",
     unitConstructor: Length.fromMillimeters,
     openMeteoName: "rain_sum",
+    color: "gray",
   },
   snowfall: {
     increase:
@@ -34,6 +37,7 @@ const rawConfig = {
       "The average yearly snowfall has decreased by {change} mm since 1940.",
     unitConstructor: Length.fromMillimeters,
     openMeteoName: "snowfall_sum",
+    color: "lightgray",
   },
 };
 

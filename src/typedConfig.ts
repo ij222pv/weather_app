@@ -9,6 +9,7 @@ const typedConfig: Record<
     decrease: string;
     unitConstructor: (value: number) => Unit;
     openMeteoName: string;
+    color: string;
   }
 > = rawConfig;
 
