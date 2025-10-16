@@ -1,3 +1,4 @@
+import { SumOrAverage } from "./types";
 import Length from "./utils/Length";
 import Speed from "./utils/Speed";
 import Temperature from "./utils/Temperature";
@@ -11,6 +12,7 @@ const rawConfig = {
     unitConstructor: Temperature.fromCelsius,
     openMeteoName: "temperature_2m_mean",
     color: "orangered",
+    sumOrAverage: SumOrAverage.AVERAGE,
   },
   windSpeed: {
     increase:
@@ -20,6 +22,7 @@ const rawConfig = {
     unitConstructor: Speed.fromKilometersPerHour,
     openMeteoName: "windspeed_10m_mean",
     color: "lightblue",
+    sumOrAverage: SumOrAverage.AVERAGE,
   },
   rainfall: {
     increase:
@@ -29,6 +32,7 @@ const rawConfig = {
     unitConstructor: Length.fromMillimeters,
     openMeteoName: "rain_sum",
     color: "gray",
+    sumOrAverage: SumOrAverage.SUM,
   },
   snowfall: {
     increase:
@@ -38,6 +42,7 @@ const rawConfig = {
     unitConstructor: Length.fromMillimeters,
     openMeteoName: "snowfall_sum",
     color: "lightgray",
+    sumOrAverage: SumOrAverage.SUM,
   },
 };
 

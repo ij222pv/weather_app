@@ -1,5 +1,5 @@
 import rawConfig from "./rawConfig";
-import { WeatherMetric } from "./types";
+import { SumOrAverage, WeatherMetric } from "./types";
 import Unit from "./utils/Unit";
 
 const typedConfig: Record<
@@ -10,6 +10,7 @@ const typedConfig: Record<
     unitConstructor: (value: number) => Unit;
     openMeteoName: string;
     color: string;
+    sumOrAverage: SumOrAverage;
   }
 > = rawConfig;
 
