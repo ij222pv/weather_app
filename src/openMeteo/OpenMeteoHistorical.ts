@@ -1,11 +1,9 @@
 import type HistoricalWeatherApi from "../api/HistoricalWeatherApi";
-import type { WeatherMetric, WeatherData } from "../api/HistoricalWeatherApi";
 import TooManyRequestsError from "../errors/TooManyRequestsError";
+import config from "../typedConfig";
+import { WeatherData, WeatherMetric } from "../types";
 import Coordinate from "../utils/Coordinate";
 import DateRange from "../utils/DateRange";
-import Length from "../utils/Length";
-import Speed from "../utils/Speed";
-import Temperature from "../utils/Temperature";
 
 type HistoricalJsonResponse = {
   latitude: number;
@@ -133,23 +131,13 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
       const dailyData: WeatherData = {
         date: new Date(json.daily.time[i]),
       };
-      if (options.includes("temperature" as WeatherMetric)) {
-        dailyData.temperature = Temperature.fromCelsius(
-          json.daily.temperature_2m_mean![i],
-        );
-      }
-      if (options.includes("windSpeed" as WeatherMetric)) {
-        dailyData.windSpeed = Speed.fromKilometersPerHour(
-          json.daily.windspeed_10m_mean![i],
-        );
-      }
-      if (options.includes("rainfall" as WeatherMetric)) {
-        dailyData.rainfall = Length.fromMillimeters(json.daily.rain_sum![i]);
-      }
-      if (options.includes("snowfall" as WeatherMetric)) {
-        dailyData.snowfall = Length.fromMillimeters(
-          json.daily.snowfall_sum![i],
-        );
+
+      for (const [key, value] of Object.entries(config)) {
+        if (options.includes(key as WeatherMetric)) {
+          dailyData[key as WeatherMetric] = value.unitConstructor(
+            json.daily[value.openMeteoName][i],
+          );
+        }
       }
 
       result.push(dailyData);

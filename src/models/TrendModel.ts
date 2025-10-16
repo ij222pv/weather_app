@@ -1,6 +1,6 @@
 import { Point } from "line-chart";
-import { WeatherData, WeatherMetric } from "../api/HistoricalWeatherApi";
 import Unit from "../utils/Unit";
+import { WeatherData, WeatherMetric } from "../types";
 
 const METRICS: WeatherMetric[] = [
   "temperature",

@@ -1,17 +1,13 @@
 import { Point } from "line-chart";
-import { WeatherData, WeatherMetric } from "../api/HistoricalWeatherApi";
 import OpenMeteoGeocoding from "../openMeteo/OpenMeteoGeocoding";
 import OpenMeteoHistorical from "../openMeteo/OpenMeteoHistorical";
 import DateRange from "../utils/DateRange";
 import TooManyRequestsError from "../errors/TooManyRequestsError";
 import FormHandler from "../ui/FormHandler";
 import TrendModel from "../models/TrendModel";
-import Unit from "../utils/Unit";
-import Temperature from "../utils/Temperature";
-import Length from "../utils/Length";
-import Speed from "../utils/Speed";
 import TrendResultRenderer from "../ui/TrendResultRenderer";
 import { ChartData } from "../ui/ChartData";
+import { WeatherData, WeatherMetric } from "../types";
 
 export default class TrendController {
   private formHandler: FormHandler;
@@ -76,7 +72,7 @@ export default class TrendController {
         }
         return new Point(
           entry.date.getFullYear(),
-          this.getNumberFromUnit(entry[metric]) ?? 0,
+          entry[metric].getDisplayNumber() ?? 0,
         );
       });
 
@@ -103,16 +99,5 @@ export default class TrendController {
 
       renderer.renderChart(chartData, metric);
     }
-  }
-
-  private getNumberFromUnit(value: Unit) {
-    if (value instanceof Temperature) {
-      return value.toCelsius();
-    } else if (value instanceof Length) {
-      return value.toMillimeters();
-    } else if (value instanceof Speed) {
-      return value.toMetersPerSecond();
-    }
-    return Number(value);
   }
 }

@@ -1,7 +1,7 @@
 import { Color, LineChart, Polyline } from "line-chart";
-import { WeatherMetric } from "../api/HistoricalWeatherApi";
 import { ChartData as ChartData } from "./ChartData";
-import MESSAGES_FOR_CHANGE from "./messages.json";
+import config from "../typedConfig";
+import { WeatherMetric } from "../types";
 
 const COLOR_FOR_METRIC: Record<WeatherMetric, string> = {
   temperature: "orangered",
@@ -46,7 +46,7 @@ export default class TrendResultRenderer {
 
   private createChart(chartData: ChartData, metric: WeatherMetric): LineChart {
     const chart = new LineChart();
-    const lines = this.getLines(chartData, metric);
+    const lines = this.createLines(chartData, metric);
     for (const line of lines) {
       chart.addLine(line);
     }
@@ -66,7 +66,7 @@ export default class TrendResultRenderer {
     return this.stringToPreTag(this.getMetricChangeMessage(metric, change));
   }
 
-  private getLines(chartData: ChartData, metric: WeatherMetric): Polyline[] {
+  private createLines(chartData: ChartData, metric: WeatherMetric): Polyline[] {
     return [
       new Polyline(chartData.rawPoints, {
         color: new Color("orange"),
@@ -95,9 +95,9 @@ export default class TrendResultRenderer {
   ): string {
     let message = "";
     if (change > 0) {
-      message = MESSAGES_FOR_CHANGE[metric].increase;
+      message = config[metric].increase;
     } else if (change < 0) {
-      message = MESSAGES_FOR_CHANGE[metric].decrease;
+      message = config[metric].decrease;
     }
     return message.replace("{change}", Math.abs(change).toFixed(2));
   }
