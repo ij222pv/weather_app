@@ -6,6 +6,6 @@ export default interface HistoricalWeatherApi {
   getDaily(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherMetric[],
+    selectedMetrics: WeatherMetric[],
   ): Promise<WeatherData[]>;
 }

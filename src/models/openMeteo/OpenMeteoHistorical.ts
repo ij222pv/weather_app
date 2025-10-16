@@ -25,20 +25,20 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   public async getDaily(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherMetric[],
+    selectedMetrics: WeatherMetric[],
   ): Promise<WeatherData[]> {
-    const response = await this.fetch(location, dates, options);
+    const response = await this.fetch(location, dates, selectedMetrics);
     const json = await this.getJsonFromResponse(response);
-    const weatherData = this.getWeatherDataFromJson(json, options);
+    const weatherData = this.getWeatherDataFromJson(json, selectedMetrics);
     return weatherData;
   }
 
   private async fetch(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherMetric[],
+    selectedMetrics: WeatherMetric[],
   ): Promise<Response> {
-    const url = this.getFetchUrl(location, dates, options);
+    const url = this.getFetchUrl(location, dates, selectedMetrics);
     const response = await fetch(url);
     this.validateResponse(response);
     return response;
@@ -47,7 +47,7 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   private getFetchUrl(
     location: Coordinate,
     dates: DateRange,
-    options: WeatherMetric[],
+    selectedMetrics: WeatherMetric[],
   ): URL {
     const url = new URL(OpenMeteoHistorical.apiUrl);
     url.searchParams.append("latitude", location.latitude.toString());
@@ -57,7 +57,7 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
       this.convertDateToString(dates.start),
     );
     url.searchParams.append("end_date", this.convertDateToString(dates.end));
-    for (const param of this.getListOfDailyParameters(options)) {
+    for (const param of this.getListOfDailyParameters(selectedMetrics)) {
       url.searchParams.append("daily", param);
     }
     url.searchParams.append("format", "json");
