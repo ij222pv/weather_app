@@ -27,7 +27,7 @@ export default class TrendModel {
     coordinates: Coordinate,
     metrics: WeatherMetric[],
   ): Promise<WeatherData[]> {
-    return await this.historicalApi.getDaily(
+    return await this.historicalApi.getDailyWeatherData(
       coordinates,
       new DateRange(new Date(`${START_YEAR}-01-01`), new Date()),
       metrics,

@@ -22,7 +22,7 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   private static readonly apiUrl =
     "https://archive-api.open-meteo.com/v1/archive";
 
-  public async getDaily(
+  public async getDailyWeatherData(
     location: Coordinate,
     dates: DateRange,
     selectedMetrics: WeatherMetric[],

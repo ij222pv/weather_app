@@ -3,7 +3,7 @@ import Coordinate from "../utils/Coordinate";
 import DateRange from "../utils/DateRange";
 
 export default interface HistoricalWeatherApi {
-  getDaily(
+  getDailyWeatherData(
     location: Coordinate,
     dates: DateRange,
     selectedMetrics: WeatherMetric[],
