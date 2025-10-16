@@ -1,136 +1,93 @@
 import { Point } from "line-chart";
-import Unit from "../utils/Unit";
-import { WeatherData, WeatherMetric } from "../types";
-
-const METRICS: WeatherMetric[] = [
-  "temperature",
-  "windSpeed",
-  "rainfall",
-  "snowfall",
-];
-
-enum SumOrAverage {
-  SUM,
-  AVERAGE,
-}
-
-const METRICS_AVERAGE_OR_SUM: Record<WeatherMetric, SumOrAverage> = {
-  temperature: SumOrAverage.AVERAGE,
-  windSpeed: SumOrAverage.AVERAGE,
-  rainfall: SumOrAverage.SUM,
-  snowfall: SumOrAverage.SUM,
-};
+import { ChartData, WeatherData, WeatherMetric } from "../types";
+import Coordinate from "../utils/Coordinate";
+import HistoricalWeatherApi from "../api/HistoricalWeatherApi";
+import DateRange from "../utils/DateRange";
+import { AVAILABLE_METRICS, START_YEAR } from "../typedConfig";
+import RegressionModel from "./RegressionModel";
+import Range from "../utils/Range";
+import MetricAnalyzer, { MultipleMetricYearlyData } from "./MetricAnalyzer";
 
 export default class TrendModel {
-  public getCityFromFormData(formData: FormData): string {
-    const city = formData.get("city")?.toString();
-    if (!city) throw new Error("City is required");
-    return city;
+  private historicalApi: HistoricalWeatherApi;
+
+  constructor(historicalApi: HistoricalWeatherApi) {
+    this.historicalApi = historicalApi;
   }
 
-  public getWeatherMetricsFromFormData(formData: FormData): WeatherMetric[] {
-    const metrics: WeatherMetric[] = [];
-    for (const metric of METRICS) {
-      if (formData.get(metric)) metrics.push(metric);
-    }
-    return metrics;
+  public async getYearlyWeatherData(
+    coordinates: Coordinate,
+    metrics: WeatherMetric[],
+  ): Promise<WeatherData[]> {
+    const weatherData = await this.getRawWeatherData(coordinates, metrics);
+    return this.getYearlyAveragesFromRawData(weatherData);
   }
 
-  public getAverageYearlyData(data: WeatherData[]): WeatherData[] {
-    const yearlyMetrics: Partial<Record<WeatherMetric, Record<number, Unit>>> =
-      {};
-    for (const metric of METRICS) {
-      yearlyMetrics[metric] = this.getYearlyMetric(data, metric);
+  private async getRawWeatherData(
+    coordinates: Coordinate,
+    metrics: WeatherMetric[],
+  ): Promise<WeatherData[]> {
+    return await this.historicalApi.getDaily(
+      coordinates,
+      new DateRange(new Date(`${START_YEAR}-01-01`), new Date()),
+      metrics,
+    );
+  }
+
+  private getYearlyAveragesFromRawData(data: WeatherData[]): WeatherData[] {
+    const yearlyMetrics: MultipleMetricYearlyData = {};
+    for (const metric of AVAILABLE_METRICS) {
+      const metricAnalyzer = new MetricAnalyzer(data, metric);
+      yearlyMetrics[metric] = metricAnalyzer.getYearlyData();
     }
+    return this.consolidateWeatherDataByYear(yearlyMetrics);
+  }
+
+  private consolidateWeatherDataByYear(
+    data: MultipleMetricYearlyData,
+  ): WeatherData[] {
     const result: WeatherData[] = [];
-    // TODO: Don't use .temperature in case the user doesn't select the temperature checkbox
-    for (const year in yearlyMetrics.temperature) {
-      const entry: WeatherData = {
-        date: new Date(Number(year), 0, 1),
-      };
-      for (const metric of METRICS) {
-        const yearlyMetric = yearlyMetrics[metric];
-        if (yearlyMetric && yearlyMetric[year]) {
-          entry[metric] = yearlyMetric[year];
-        }
+    for (let year = START_YEAR; year <= new Date().getFullYear(); year++) {
+      const entry: WeatherData = { date: new Date(`${year}-01-01`) };
+      for (const metric of Object.keys(data)) {
+        entry[metric] = data[metric][year] ?? null;
       }
       result.push(entry);
     }
     return result;
   }
 
-  public getRollingAverage(data: number[], windowSize: number): number[] {
-    const result: number[] = [];
-    for (let i = 0; i < data.length; i++) {
-      const start = Math.max(0, i - Math.floor(windowSize / 2));
-      const end = Math.min(data.length - 1, i + Math.floor(windowSize / 2));
-      const window = data.slice(start, end + 1);
-      const average =
-        window.reduce((sum, value) => sum + value, 0) / window.length;
-      result.push(average);
-    }
-    return result;
+  public getChartDataFromWeatherData(
+    weatherData: WeatherData[],
+    metric: WeatherMetric,
+  ): ChartData {
+    const points = this.getPointsFromWeatherData(weatherData, metric);
+
+    const regressionModel = new RegressionModel();
+    const regressionPoints = regressionModel.getRegressionLine(
+      points,
+      new Range(points[0]?.x ?? 0, points[points.length - 1]?.x ?? 0),
+    );
+
+    return {
+      rawPoints: points,
+      regression: regressionPoints,
+    };
   }
 
-  public linearRegression(points: Point[]): {
-    slope: number;
-    intercept: number;
-  } {
-    const n = points.length;
-    const meanX = points.reduce((a, b) => a + b.x, 0) / n;
-    const meanY = points.reduce((a, b) => a + b.y, 0) / n;
-
-    let numerator = 0;
-    let denominator = 0;
-
-    for (let i = 0; i < n; i++) {
-      numerator += (points[i].x - meanX) * (points[i].y - meanY);
-      denominator += (points[i].x - meanX) ** 2;
-    }
-
-    const b = numerator / denominator;
-    const a = meanY - b * meanX;
-
-    return { slope: b, intercept: a };
-  }
-
-  private getYearlyMetric(
-    data: WeatherData[],
-    metric: Exclude<keyof WeatherData, "date">,
-  ): Record<number, Unit> {
-    const sums: Record<number, Unit> = {};
-    const counts: Record<number, number> = {};
-    data.forEach((entry) => {
-      const year = new Date(entry.date).getFullYear();
-      if (entry[metric] === undefined) {
-        return;
-      }
-      if (!sums[year]) {
-        sums[year] = entry[metric];
-      } else {
-        sums[year] = sums[year].add(entry[metric]);
-      }
-      counts[year] ??= 0;
-      counts[year]++;
-    });
-    if (METRICS_AVERAGE_OR_SUM[metric] === SumOrAverage.SUM) {
-      return sums;
-    } else if (METRICS_AVERAGE_OR_SUM[metric] === SumOrAverage.AVERAGE) {
-      return this.getYearlyAveragesFromSumsAndCounts(sums, counts);
-    } else {
-      throw new Error("Unknown metric");
-    }
-  }
-
-  private getYearlyAveragesFromSumsAndCounts(
-    sums: Record<number, Unit>,
-    counts: Record<number, number>,
-  ): Record<number, Unit> {
-    const result: Record<number, Unit> = {};
-    for (const year in sums) {
-      const yearAsNumber = Number(year);
-      result[yearAsNumber] = sums[yearAsNumber].divide(counts[yearAsNumber]);
-    }
-    return result;
+  private getPointsFromWeatherData(
+    weatherData: WeatherData[],
+    metric: WeatherMetric,
+  ): Point[] {
+    return weatherData
+      .filter((entry) => {
+        return entry[metric] !== undefined;
+      })
+      .map((entry) => {
+        return new Point(
+          entry.date.getFullYear(),
+          entry[metric]!.getDisplayNumber() ?? 0,
+        );
+      });
   }
 }

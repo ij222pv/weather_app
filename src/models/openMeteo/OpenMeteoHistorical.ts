@@ -1,5 +1,6 @@
 import type HistoricalWeatherApi from "../../api/HistoricalWeatherApi";
 import TooManyRequestsError from "../../errors/TooManyRequestsError";
+import typedConfig from "../../typedConfig";
 import config from "../../typedConfig";
 import { WeatherData, WeatherMetric } from "../../types";
 import Coordinate from "../../utils/Coordinate";
@@ -20,12 +21,6 @@ type HistoricalJsonResponse = {
 export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   private static readonly apiUrl =
     "https://archive-api.open-meteo.com/v1/archive";
-  private static readonly optionsMap: Record<WeatherMetric, string> = {
-    temperature: "temperature_2m_mean",
-    windSpeed: "windspeed_10m_mean",
-    rainfall: "rain_sum",
-    snowfall: "snowfall_sum",
-  };
 
   public async getDaily(
     location: Coordinate,
@@ -74,10 +69,10 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
     return date.toISOString().split("T")[0];
   }
 
-  private getListOfDailyParameters(options: WeatherMetric[]): string[] {
+  private getListOfDailyParameters(selectedMetrics: WeatherMetric[]): string[] {
     const params: string[] = [];
-    for (const option of options) {
-      params.push(OpenMeteoHistorical.optionsMap[option]);
+    for (const metric of selectedMetrics) {
+      params.push(typedConfig[metric].openMeteoName);
     }
     return params;
   }
