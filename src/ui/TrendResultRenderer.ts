@@ -1,7 +1,6 @@
 import { Color, LineChart, Polyline } from "line-chart";
-import { ChartData as ChartData } from "./ChartData";
 import config from "../typedConfig";
-import { WeatherMetric } from "../types";
+import { ChartData, WeatherMetric } from "../types";
 
 export default class TrendResultRenderer {
   private resultDiv: HTMLElement;
@@ -28,20 +27,19 @@ export default class TrendResultRenderer {
   }
 
   public renderChart(chartData: ChartData, metric: WeatherMetric): void {
-    this.clear();
     const message = this.createTrendMessageElement(chartData, metric);
     const chart = this.createChart(chartData, metric);
     this.resultDiv.appendChild(message);
     this.resultDiv.appendChild(chart);
   }
 
+  public clear(): void {
+    this.resultDiv.innerHTML = "";
+  }
+
   private replaceWithText(message: string): void {
     this.clear();
     this.resultDiv.appendChild(this.stringToPreTag(message));
-  }
-
-  private clear(): void {
-    this.resultDiv.innerHTML = "";
   }
 
   private createChart(chartData: ChartData, metric: WeatherMetric): LineChart {
@@ -63,18 +61,14 @@ export default class TrendResultRenderer {
     const change =
       chartData.regression[chartData.regression.length - 1].y -
       chartData.regression[0].y;
-    return this.stringToPreTag(this.getMetricChangeMessage(metric, change));
+    return this.stringToPreTag(this.getChangeMessage(metric, change));
   }
 
   private createLines(chartData: ChartData, metric: WeatherMetric): Polyline[] {
     return [
       new Polyline(chartData.rawPoints, {
-        color: new Color("orange"),
-        thickness: 2,
-      }),
-      new Polyline(chartData.rollingAverage, {
         color: new Color(config[metric].color),
-        thickness: 5,
+        thickness: 3,
       }),
       new Polyline(chartData.regression, {
         color: new Color("black"),
@@ -89,10 +83,7 @@ export default class TrendResultRenderer {
     return pre;
   }
 
-  private getMetricChangeMessage(
-    metric: WeatherMetric,
-    change: number,
-  ): string {
+  private getChangeMessage(metric: WeatherMetric, change: number): string {
     const template = this.getChangeMessageTemplate(metric, change);
     return template.replace("{change}", Math.abs(change).toFixed(2));
   }
