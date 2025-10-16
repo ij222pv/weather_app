@@ -1,4 +1,5 @@
 export default abstract class Unit {
+  public abstract getDisplayNumber(): number;
   protected abstract valueOf(): number;
 
   /**

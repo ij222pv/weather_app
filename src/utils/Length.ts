@@ -29,6 +29,10 @@ export default class Length extends Unit {
     return this.meters / 1000;
   }
 
+  public getDisplayNumber(): number {
+    return this.toMillimeters();
+  }
+
   protected valueOf(): number {
     return this.meters;
   }
