@@ -78,13 +78,12 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   }
 
   private validateResponse(response: Response): void {
-    if (response.ok) {
-      return;
-    }
     if (response.status === 429) {
       throw new TooManyRequestsError("Rate limit exceeded");
     }
-    throw new Error("Network response was not ok");
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
   }
 
   private async getJsonFromResponse(
