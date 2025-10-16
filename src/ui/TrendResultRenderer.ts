@@ -3,13 +3,6 @@ import { ChartData as ChartData } from "./ChartData";
 import config from "../typedConfig";
 import { WeatherMetric } from "../types";
 
-const COLOR_FOR_METRIC: Record<WeatherMetric, string> = {
-  temperature: "orangered",
-  windSpeed: "lightblue",
-  rainfall: "gray",
-  snowfall: "lightgray",
-};
-
 export default class TrendResultRenderer {
   private resultDiv: HTMLElement;
 
@@ -19,29 +12,36 @@ export default class TrendResultRenderer {
   }
 
   public renderLoadingMessage(city: string): void {
-    if (!this.resultDiv) throw new Error("Result div not found");
-    this.resultDiv.innerHTML = "";
-    this.resultDiv.appendChild(
-      this.stringToPreTag(
-        `Loading data for ${city}...\nThis may take up to a minute.`,
-      ),
+    this.replaceWithText(
+      `Loading data for ${city}...\nThis may take up to a minute.`,
     );
   }
 
   public renderCouldNotFindCityMessage(city: string): void {
-    this.resultDiv.textContent = `Could not find city: ${city}`;
+    this.replaceWithText(`Could not find city: ${city}`);
   }
 
   public renderRateLimitExceededMessage(): void {
-    this.resultDiv.textContent =
-      "Rate limit exceeded. Please try again in a few minutes.";
+    this.replaceWithText(
+      "Rate limit exceeded. Please try again in a few minutes.",
+    );
   }
 
   public renderChart(chartData: ChartData, metric: WeatherMetric): void {
+    this.clear();
     const message = this.createTrendMessageElement(chartData, metric);
-    this.resultDiv.appendChild(message);
     const chart = this.createChart(chartData, metric);
+    this.resultDiv.appendChild(message);
     this.resultDiv.appendChild(chart);
+  }
+
+  private replaceWithText(message: string): void {
+    this.clear();
+    this.resultDiv.appendChild(this.stringToPreTag(message));
+  }
+
+  private clear(): void {
+    this.resultDiv.innerHTML = "";
   }
 
   private createChart(chartData: ChartData, metric: WeatherMetric): LineChart {
@@ -73,7 +73,7 @@ export default class TrendResultRenderer {
         thickness: 2,
       }),
       new Polyline(chartData.rollingAverage, {
-        color: new Color(COLOR_FOR_METRIC[metric]),
+        color: new Color(config[metric].color),
         thickness: 5,
       }),
       new Polyline(chartData.regression, {
@@ -93,12 +93,19 @@ export default class TrendResultRenderer {
     metric: WeatherMetric,
     change: number,
   ): string {
-    let message = "";
+    const template = this.getChangeMessageTemplate(metric, change);
+    return template.replace("{change}", Math.abs(change).toFixed(2));
+  }
+
+  private getChangeMessageTemplate(
+    metric: WeatherMetric,
+    change: number,
+  ): string {
     if (change > 0) {
-      message = config[metric].increase;
+      return config[metric].increase;
     } else if (change < 0) {
-      message = config[metric].decrease;
+      return config[metric].decrease;
     }
-    return message.replace("{change}", Math.abs(change).toFixed(2));
+    return "";
   }
 }
