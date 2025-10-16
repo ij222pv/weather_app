@@ -113,6 +113,6 @@ export default class TrendController {
     } else if (value instanceof Speed) {
       return value.toMetersPerSecond();
     }
-    return value.valueOf();
+    return Number(value);
   }
 }
