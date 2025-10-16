@@ -1,5 +1,5 @@
-import GeocodingApi from "../api/GeocodingApi";
-import Coordinate from "../utils/Coordinate";
+import GeocodingApi from "../../api/GeocodingApi";
+import Coordinate from "../../utils/Coordinate";
 
 type GeocodingJsonResponse = {
   results: { latitude: number; longitude: number }[];

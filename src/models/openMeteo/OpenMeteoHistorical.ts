@@ -1,9 +1,9 @@
-import type HistoricalWeatherApi from "../api/HistoricalWeatherApi";
-import TooManyRequestsError from "../errors/TooManyRequestsError";
-import config from "../typedConfig";
-import { WeatherData, WeatherMetric } from "../types";
-import Coordinate from "../utils/Coordinate";
-import DateRange from "../utils/DateRange";
+import type HistoricalWeatherApi from "../../api/HistoricalWeatherApi";
+import TooManyRequestsError from "../../errors/TooManyRequestsError";
+import config from "../../typedConfig";
+import { WeatherData, WeatherMetric } from "../../types";
+import Coordinate from "../../utils/Coordinate";
+import DateRange from "../../utils/DateRange";
 
 type HistoricalJsonResponse = {
   latitude: number;
@@ -109,35 +109,30 @@ export default class OpenMeteoHistorical implements HistoricalWeatherApi {
   private isHistoricalJsonResponse(
     data: unknown,
   ): data is HistoricalJsonResponse {
-    if (
-      !data ||
-      typeof data !== "object" ||
-      !("latitude" in data) ||
-      !("longitude" in data) ||
-      !("daily" in data) ||
-      typeof data.daily !== "object"
-    ) {
-      return false;
-    }
-    return true;
+    return Boolean(
+      data &&
+        typeof data === "object" &&
+        "latitude" in data &&
+        "longitude" in data &&
+        "daily" in data &&
+        typeof data.daily === "object",
+    );
   }
 
-  private async getWeatherDataFromJson(
+  private getWeatherDataFromJson(
     json: HistoricalJsonResponse,
-    options: WeatherMetric[],
-  ): Promise<WeatherData[]> {
+    selectedMetrics: WeatherMetric[],
+  ): WeatherData[] {
     const result: WeatherData[] = [];
     for (let i = 0; i < json.daily.time.length; i++) {
       const dailyData: WeatherData = {
         date: new Date(json.daily.time[i]),
       };
 
-      for (const [key, value] of Object.entries(config)) {
-        if (options.includes(key as WeatherMetric)) {
-          dailyData[key as WeatherMetric] = value.unitConstructor(
-            json.daily[value.openMeteoName][i],
-          );
-        }
+      for (const metric of selectedMetrics) {
+        dailyData[metric] = config[metric].unitConstructor(
+          json.daily[config[metric].openMeteoName][i],
+        );
       }
 
       result.push(dailyData);
