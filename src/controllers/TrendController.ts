@@ -2,20 +2,21 @@ import OpenMeteoGeocoding from "../models/openMeteo/OpenMeteoGeocoding";
 import OpenMeteoHistorical from "../models/openMeteo/OpenMeteoHistorical";
 import TooManyRequestsError from "../errors/TooManyRequestsError";
 import FormHandler from "../ui/FormHandler";
-import TrendModel from "../models/TrendModel";
+import WeatherRetriever from "../models/WeatherRetriever";
 import TrendResultRenderer from "../ui/TrendResultRenderer";
 import { WeatherData, WeatherMetric } from "../types";
 import Coordinate from "../utils/Coordinate";
 import FormParser from "../models/FormParser";
+import WeatherChartDataAdapter from "../models/WeatherChartDataAdapter";
 
 export default class TrendController {
   private formHandler: FormHandler;
-  private trendModel: TrendModel;
+  private weatherRetriever: WeatherRetriever;
   private renderer: TrendResultRenderer;
 
   constructor() {
     this.formHandler = new FormHandler();
-    this.trendModel = new TrendModel(new OpenMeteoHistorical());
+    this.weatherRetriever = new WeatherRetriever(new OpenMeteoHistorical());
     this.renderer = new TrendResultRenderer();
   }
 
@@ -55,7 +56,10 @@ export default class TrendController {
     metrics: WeatherMetric[],
   ): Promise<WeatherData[]> {
     try {
-      return await this.trendModel.getYearlyWeatherData(coordinates, metrics);
+      return await this.weatherRetriever.getYearlyWeatherData(
+        coordinates,
+        metrics,
+      );
     } catch (error: unknown) {
       if (error instanceof TooManyRequestsError) {
         this.renderer.renderRateLimitExceededMessage();
@@ -71,12 +75,16 @@ export default class TrendController {
     this.renderer.clear();
 
     for (const metric of metrics) {
-      const chartData = this.trendModel.getChartDataFromWeatherData(
-        weatherData,
-        metric,
-      );
-
-      this.renderer.renderChart(chartData, metric);
+      this.renderSingleMetricWeatherData(weatherData, metric);
     }
+  }
+
+  private async renderSingleMetricWeatherData(
+    weatherData: WeatherData[],
+    metric: WeatherMetric,
+  ): Promise<void> {
+    const weatherAdapter = new WeatherChartDataAdapter(weatherData, metric);
+    const chartData = weatherAdapter.getChartData();
+    this.renderer.renderChart(chartData, metric);
   }
 }
