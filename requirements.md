@@ -11,7 +11,6 @@ The user shall be able to input a city name and select one or more weather metri
 The application shall display a line chart for each selected weather metric, showing the trend from 1940 to the most recent year. The chart shall include:
 - A line representing the yearly data points.
 - A regression line indicating the overall trend.
-- A rolling average line to smooth out short-term fluctuations.
 
 ### FR3: Chart
 
