@@ -1,14 +1,11 @@
-import { Point } from "line-chart";
-import { ChartData, WeatherData, WeatherMetric } from "../types";
+import { WeatherData, WeatherMetric } from "../types";
 import Coordinate from "../utils/Coordinate";
 import HistoricalWeatherApi from "../api/HistoricalWeatherApi";
 import DateRange from "../utils/DateRange";
 import { AVAILABLE_METRICS, START_YEAR } from "../typedConfig";
-import RegressionModel from "./RegressionModel";
-import Range from "../utils/Range";
 import MetricAnalyzer, { MultipleMetricYearlyData } from "./MetricAnalyzer";
 
-export default class TrendModel {
+export default class WeatherRetriever {
   private historicalApi: HistoricalWeatherApi;
 
   constructor(historicalApi: HistoricalWeatherApi) {
@@ -55,39 +52,5 @@ export default class TrendModel {
       result.push(entry);
     }
     return result;
-  }
-
-  public getChartDataFromWeatherData(
-    weatherData: WeatherData[],
-    metric: WeatherMetric,
-  ): ChartData {
-    const points = this.getPointsFromWeatherData(weatherData, metric);
-
-    const regressionModel = new RegressionModel();
-    const regressionPoints = regressionModel.getRegressionLine(
-      points,
-      new Range(points[0]?.x ?? 0, points[points.length - 1]?.x ?? 0),
-    );
-
-    return {
-      rawPoints: points,
-      regression: regressionPoints,
-    };
-  }
-
-  private getPointsFromWeatherData(
-    weatherData: WeatherData[],
-    metric: WeatherMetric,
-  ): Point[] {
-    return weatherData
-      .filter((entry) => {
-        return entry[metric] !== undefined;
-      })
-      .map((entry) => {
-        return new Point(
-          entry.date.getFullYear(),
-          entry[metric]!.getDisplayNumber() ?? 0,
-        );
-      });
   }
 }

@@ -8,10 +8,6 @@ export default class FormHandler {
     this.setForm(document.querySelector("#trend-form"));
   }
 
-  public onSubmit(callback: FormCallback): void {
-    this.addCallback(callback);
-  }
-
   private setForm(form: HTMLFormElement | null): void {
     this.assertIsForm(form);
     this.form = form;
@@ -69,13 +65,17 @@ export default class FormHandler {
     return this.form.querySelector("button[type=submit]")!;
   }
 
-  private addCallback(callback: FormCallback): void {
-    this.callbacks.push(callback);
-  }
-
   private executeCallbacks(): void {
     for (const callback of this.callbacks) {
       callback(new FormData(this.form));
     }
+  }
+
+  public onSubmit(callback: FormCallback): void {
+    this.addCallback(callback);
+  }
+
+  private addCallback(callback: FormCallback): void {
+    this.callbacks.push(callback);
   }
 }
