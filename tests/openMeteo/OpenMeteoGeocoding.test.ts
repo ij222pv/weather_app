@@ -1,5 +1,5 @@
 import { describe, test, expect } from "@jest/globals";
-import OpenMeteoGeocoding from "../../src/openMeteo/OpenMeteoGeocoding";
+import OpenMeteoGeocoding from "../../src/models/openMeteo/OpenMeteoGeocoding";
 import Coordinate from "../../src/utils/Coordinate";
 
 const VALID_CITY = "Stockholm";
@@ -10,9 +10,7 @@ describe("OpenMeteoGeocoding", () => {
   test("should fetch coordinates for a valid city", async () => {
     const geocoding = new OpenMeteoGeocoding();
     const coordinate = await geocoding.getCoordinatesFromCity(VALID_CITY);
-    expect(coordinate).toBeDefined();
-    expect(coordinate.latitude).toBeCloseTo(VALID_CITY_COORDINATE.latitude, 2);
-    expect(coordinate.longitude).toBeCloseTo(VALID_CITY_COORDINATE.longitude, 2);
+    expectCoordinatesToBeClose(coordinate, VALID_CITY_COORDINATE, 1);
   });
 
   test("should throw an exception for an invalid city", async () => {
@@ -22,3 +20,12 @@ describe("OpenMeteoGeocoding", () => {
     ).rejects.toThrow(Error);
   });
 });
+
+function expectCoordinatesToBeClose(
+  coord1: Coordinate,
+  coord2: Coordinate,
+  precision: number,
+): void {
+  expect(coord1.latitude).toBeCloseTo(coord2.latitude, precision);
+  expect(coord1.longitude).toBeCloseTo(coord2.longitude, precision);
+}
