@@ -25,10 +25,19 @@ export default class TrendController {
   }
 
   private async handleSubmit(formData: FormData): Promise<void> {
-    const formParser = new FormParser(formData);
-    const city = formParser.getCity();
-    const metrics = formParser.getWeatherMetrics();
+    const { city, metrics } = this.parseFormData(formData);
     this.displayTrendGraphs(city, metrics);
+  }
+
+  private parseFormData(formData: FormData): {
+    city: string;
+    metrics: WeatherMetric[];
+  } {
+    const formParser = new FormParser(formData);
+    return {
+      city: formParser.getCity(),
+      metrics: formParser.getWeatherMetrics(),
+    };
   }
 
   private async displayTrendGraphs(
