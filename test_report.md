@@ -1,5 +1,7 @@
 # Test report
 
+This app has both manual and automated tests. The manual tests are written below. The automated tests can be found in the `tests` folder and ran using `npm test`.
+
 ## TC1 - Input form
 
 | Step | Action                                                           | Expected Result                                                                                                                  |
@@ -27,8 +29,23 @@
 
 ## TC4 - Units
 
-| Step | Action                                                                                           | Expected Result                                                                                                                                                                                                                                                     |
-| ---- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | Fill in the form with the city name "Stockholm", check all weather metrics, and submit the form. | The form is submitted and charts are displayed for each selected weather metric.                                                                                                                                                                                    |
-| 2    | Verify the units in the messages written above each chart.                                        | The units used are as follows: temperature in °C, wind speed in m/s, rainfall in mm, and snowfall in mm.                                                                                                                                                            |
+| Step | Action                                                                                           | Expected Result                                                                                                                                                                                                                                                                          |
+| ---- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Fill in the form with the city name "Stockholm", check all weather metrics, and submit the form. | The form is submitted and charts are displayed for each selected weather metric.                                                                                                                                                                                                         |
+| 2    | Verify the units in the messages written above each chart.                                       | The units used are as follows: temperature in °C, wind speed in m/s, rainfall in mm, and snowfall in mm.                                                                                                                                                                                 |
 | 3    | Verify the units on the y-axis of each chart.                                                    | The y-axis displays values that can feasibly be in the same unit as the unit used in the message above. For Stockholm, the y-axis should show values for temperature in the range 4-10, wind speed in the range 3.3-4.1, rainfall in the range 250-750, and snowfall in the range 20-160 |
+
+## Results
+
+**Date:** 2025-10-20
+
+**Version:** 1.0.0
+
+| Test Case         | Result |
+| ----------------- | ------ |
+| TC1 - Input form  | Passed |
+| TC2 - Show trends | Passed |
+| TC3 - Chart       | Passed |
+| TC4 - Units       | Passed |
+
+![Automated tests](.readme/automated-tests.png)
