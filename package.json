@@ -1,6 +1,6 @@
 {
-  "name": "l3",
-  "version": "0.0.0",
+  "name": "weather-trend-analyzer",
+  "version": "1.0.0",
   "description": "",
   "license": "MIT",
   "author": "",
@@ -8,18 +8,23 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "jest"
   },
   "dependencies": {
-    "line-chart": "file:../L2",
+    "line-chart": "github:ij222pv/line-chart#l3",
     "vite": "^7.1.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
+    "@jest/globals": "^30.2.0",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.4.0",
+    "ts-jest": "^29.4.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.45.0"
   }
