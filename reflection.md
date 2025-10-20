@@ -2,7 +2,15 @@
 
 ## Chapter 2: Meaningful Names
 
+At first I used the word `options` for the argument providing selected weather metrics to functions. But I realized that I was calling the same weather metrics `metrics` in other parts of the code. Therefore I changed `options` to `metrics` to make the naming consistent throughout the codebase (Pick One Word per Concept). I have also made sure to use intention-revealing names for variables and functions as you can see in the example below. `renderLoadingMessage()` explains exactly what the function does.
+
+![displayTrendGraphs function](.readme/screenshots/2-1.png)
+
 ## Chapter 3: Functions
+
+I use the single responsibility principle when writing functions in order to narrow down the responsibility for each one. This example function handles the form submit by parsing the form data, and sending it to another function for further processing. It just binds together smaller functions to achieve its goal, making it easy to read and understand at a glance.
+
+![handleSubmit function](.readme/screenshots/3-1.png)
 
 ## Chapter 4: Comments
 
@@ -67,3 +75,21 @@ Interface for retrieving coordinates from a location name:
 Interface for retrieving historical weather data:
 
 ![HistoricalWeatherApi interface](.readme/screenshots/8-2.png)
+
+## Chapter 9: Unit Tests
+
+I focused more on manual tests than automated tests for this project, but I wrote a few unit tests anyway. As the book suggests I have tried to minimize the number of asserts in each test in order to make it cleaner and easier to understand what the test is verifying at a glance. Each test also focuses on testing only one behavior of the class. For these classes I used test driven development (TDD) to write the tests first before implementing the classes. And I also tried to write my unit tests as cleanly as possible, since the book suggests that readability of tests is even more important than the readability of the main code.
+
+![Tests for Temperature class](.readme/screenshots/9-1.png)
+
+## Chapter 10: Classes
+
+In the screenshot below is the `FormParser` class which is responsible for getting the city name and selected weather metrics from the input form. Previously, these methods were part of a larger class, but I decided to extract them into their own class to adhere to the Single Responsibility Principle (SRP). The `FormParser` class now only has one reason to change, which is if the form structure changes. This makes the code more modular and easier to maintain. The resulting class has a high cohesion, since both methods use the same private field `formData`.
+
+![FormParser class](.readme/screenshots/10-1.png)
+
+## Chapter 11: Systems
+
+I have used dependency injection in order to decouple the weather API from the processing of weather data. This allows me to easily swap out the weather API implementation without changing the code that processes the weather data. In the example screenshot, the `WeatheRetriever` class receives an instance of `OpenMeteoHistorical`, which is an implementation of the interface `HistoricalWeatherApi`. This design reduces coupling between components and makes the system more flexible and easier to test.
+
+![Dependency injection](.readme/screenshots/11-1.png)
