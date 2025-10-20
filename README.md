@@ -3,6 +3,10 @@
 ![Version](https://img.shields.io/github/package-json/v/ij222pv/weather_app)
 [![License](https://img.shields.io/github/license/ij222pv/weather_app)](LICENSE)
 
+- [Requirements](requirements.md)
+- [Test report](test_report.md)
+- [Reflection](reflection.md)
+
 Deployed at: https://ij222pv.github.io/weather_app/
 
 A simple weather app built with Vite and TypeScript that gets weather data from the Open-Meteo API and displays data using the [line chart library](https://github.com/ij222pv/line-chart) from assignment L2.
