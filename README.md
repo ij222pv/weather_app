@@ -3,17 +3,17 @@
 ![Version](https://img.shields.io/github/package-json/v/ij222pv/weather_app)
 [![License](https://img.shields.io/github/license/ij222pv/weather_app)](LICENSE)
 
+Deployed at: https://ij222pv.github.io/weather_app/
+
+This app is meant to allow anyone to view graphs over weather trends. The app should allow you to type in a location, select a number of weather metrics like temperature and snowfall, and then show a graph over how these metrics have changed over the years. It should also show a linear regression in the graphs to more clearly illustrate the trend. And you should see a text associated with each graph, describing trend.
+
+This app is built using Vite and TypeScript, gets weather data from the Open-Meteo API, and displays data using the [line chart library](https://github.com/ij222pv/line-chart) I have previously made.
+
+## Documents 
+
 - [Requirements](requirements.md)
 - [Test report](test_report.md)
 - [Reflection](reflection.md)
-
-Deployed at: https://ij222pv.github.io/weather_app/
-
-A simple weather app built with Vite and TypeScript that gets weather data from the Open-Meteo API and displays data using the [line chart library](https://github.com/ij222pv/line-chart) from assignment L2.
-
-## Vision
-
-This app is meant to allow anyone to view graphs over weather trends. The app should allow you to type in a location, select a number of weather metrics like temperature and snowfall, and then show a graph over how these metrics have changed over the years. It should also show a linear regression in the graphs to more clearly illustrate the trend. And you should see a text associated with each graph, describing trend.
 
 ## Contributing
 
