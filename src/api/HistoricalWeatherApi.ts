@@ -1,6 +1,6 @@
 import { WeatherData, WeatherMetric } from "../types";
-import Coordinate from "../utils/Coordinate";
-import DateRange from "../utils/DateRange";
+import Coordinate from "../models/Coordinate";
+import DateRange from "../models/DateRange";
 
 export default interface HistoricalWeatherApi {
   getDailyWeatherData(

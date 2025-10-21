@@ -1,6 +1,6 @@
 import rawConfig from "./rawConfig";
 import { SumOrAverage, WeatherMetric } from "./types";
-import Unit from "./utils/Unit";
+import Unit from "./models/Unit";
 
 const typedConfig: Record<
   WeatherMetric,

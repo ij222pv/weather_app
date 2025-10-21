@@ -3,8 +3,8 @@ import TooManyRequestsError from "../../errors/TooManyRequestsError";
 import typedConfig from "../../typedConfig";
 import config from "../../typedConfig";
 import { WeatherData, WeatherMetric } from "../../types";
-import Coordinate from "../../utils/Coordinate";
-import DateRange from "../../utils/DateRange";
+import Coordinate from "../Coordinate";
+import DateRange from "../DateRange";
 
 type HistoricalJsonResponse = {
   latitude: number;

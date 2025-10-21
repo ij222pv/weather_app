@@ -5,7 +5,7 @@ import FormHandler from "../ui/FormHandler";
 import WeatherRetriever from "../models/WeatherRetriever";
 import TrendResultRenderer from "../ui/TrendResultRenderer";
 import { WeatherData, WeatherMetric } from "../types";
-import Coordinate from "../utils/Coordinate";
+import Coordinate from "../models/Coordinate";
 import FormParser from "../models/FormParser";
 import WeatherChartDataAdapter from "../models/WeatherChartDataAdapter";
 
@@ -14,7 +14,7 @@ export default class TrendController {
   private weatherRetriever: WeatherRetriever;
   private renderer: TrendResultRenderer;
 
-  constructor() {
+  public constructor() {
     this.formHandler = new FormHandler();
     this.weatherRetriever = new WeatherRetriever(new OpenMeteoHistorical());
     this.renderer = new TrendResultRenderer();
