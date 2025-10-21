@@ -1,5 +1,5 @@
 export default class Coordinate {
-  constructor(
+  public constructor(
     public readonly latitude: number,
     public readonly longitude: number,
   ) {}

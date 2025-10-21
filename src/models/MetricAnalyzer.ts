@@ -1,6 +1,6 @@
 import typedConfig from "../typedConfig";
 import { SumOrAverage, WeatherData, WeatherMetric } from "../types";
-import Unit from "../utils/Unit";
+import Unit from "./Unit";
 
 export type SingleMetricYearlyData = Record<number, Unit>;
 export type MultipleMetricYearlyData = Partial<
@@ -8,7 +8,7 @@ export type MultipleMetricYearlyData = Partial<
 >;
 
 export default class MetricAnalyzer {
-  constructor(
+  public constructor(
     private weatherData: WeatherData[],
     private metric: WeatherMetric,
   ) {}

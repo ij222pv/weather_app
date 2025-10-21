@@ -14,7 +14,7 @@ export default class TrendController {
   private weatherRetriever: WeatherRetriever;
   private renderer: TrendResultRenderer;
 
-  constructor() {
+  public constructor() {
     this.formHandler = new FormHandler();
     this.weatherRetriever = new WeatherRetriever(new OpenMeteoHistorical());
     this.renderer = new TrendResultRenderer();

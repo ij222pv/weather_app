@@ -2,7 +2,7 @@ import { AVAILABLE_METRICS } from "../typedConfig";
 import { WeatherMetric } from "../types";
 
 export default class FormParser {
-  constructor(private formData: FormData) {}
+  public constructor(private formData: FormData) {}
 
   public getCity(): string {
     const city = this.formData.get("city")?.toString();

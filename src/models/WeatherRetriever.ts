@@ -8,7 +8,7 @@ import MetricAnalyzer, { MultipleMetricYearlyData } from "./MetricAnalyzer";
 export default class WeatherRetriever {
   private historicalApi: HistoricalWeatherApi;
 
-  constructor(historicalApi: HistoricalWeatherApi) {
+  public constructor(historicalApi: HistoricalWeatherApi) {
     this.historicalApi = historicalApi;
   }
 

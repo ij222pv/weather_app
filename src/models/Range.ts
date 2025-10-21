@@ -2,7 +2,7 @@ export default class Range {
   public readonly start: number;
   public readonly end: number;
 
-  constructor(start: number = 0, end: number = 1) {
+  public constructor(start: number = 0, end: number = 1) {
     this.validateNumber(start);
     this.validateNumber(end);
     this.start = start;
@@ -18,10 +18,7 @@ export default class Range {
     }
   }
 
-  /**
-   * @return The length of the range.
-   */
-  get length(): number {
+  public get length(): number {
     return this.end - this.start;
   }
 }
