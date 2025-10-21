@@ -1,7 +1,7 @@
 import { SumOrAverage } from "./types";
-import Length from "./utils/Length";
-import Speed from "./utils/Speed";
-import Temperature from "./utils/Temperature";
+import Length from "./models/Length";
+import Speed from "./models/Speed";
+import Temperature from "./models/Temperature";
 
 const rawConfig = {
   temperature: {

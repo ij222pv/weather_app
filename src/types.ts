@@ -1,6 +1,6 @@
 import { Point } from "line-chart";
 import config from "./rawConfig";
-import Unit from "./utils/Unit";
+import Unit from "./models/Unit";
 
 export type WeatherData = {
   date: Date;

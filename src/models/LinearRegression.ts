@@ -1,5 +1,5 @@
 import { Point } from "line-chart";
-import Range from "../utils/Range";
+import Range from "./Range";
 
 export type Regression = {
   slope: number;

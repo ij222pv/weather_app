@@ -1,7 +1,7 @@
 import { WeatherData, WeatherMetric } from "../types";
-import Coordinate from "../utils/Coordinate";
+import Coordinate from "./Coordinate";
 import HistoricalWeatherApi from "../api/HistoricalWeatherApi";
-import DateRange from "../utils/DateRange";
+import DateRange from "./DateRange";
 import { AVAILABLE_METRICS, START_YEAR } from "../typedConfig";
 import MetricAnalyzer, { MultipleMetricYearlyData } from "./MetricAnalyzer";
 

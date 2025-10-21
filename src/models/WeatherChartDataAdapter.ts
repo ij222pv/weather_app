@@ -1,7 +1,7 @@
 import { Point } from "line-chart";
 import { ChartData, WeatherData, WeatherMetric } from "../types";
 import LinearRegression from "./LinearRegression";
-import Range from "../utils/Range";
+import Range from "./Range";
 
 export default class WeatherChartDataAdapter {
   public constructor(
